@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/jenis/OneDrive/Documents/FOXSENSE/cafeteriaOrder.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="150"/><column_width id="3" width="3818"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,5:mainusers"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="sqlite_sequence" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="183"/><column index="2" value="61"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="88"/><column index="2" value="112"/><column index="3" value="124"/><column index="4" value="193"/><column index="5" value="92"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">CREATE TABLE users (
+        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username VARCHAR(50) NOT NULL,
+        password VARCHAR(100) NOT NULL,
+        email VARCHAR(100) NOT NULL,
+        campus TEXT CHECK (campus IN ('campus a', 'campus b')) NOT NULL
+        );
+		
+CREATE TABLE cafes (
+            cafe_id INTEGER PRIMARY KEY,
+            cafe_name VARCHAR(100) NOT NULL,
+            location VARCHAR(255) NOT NULL
+        );
+		
+		
+CREATE TABLE menu_items (
+            item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            item_name VARCHAR(100) NOT NULL,
+            description TEXT,
+            diet_info TEXT CHECK (diet_info IN ('veg', 'non-veg', 'gluten-free')) NOT NULL,
+            price DECIMAL(10, 2) NOT NULL,
+            item_count INTEGER NOT NULL,
+            cafe_id INTEGER,
+            FOREIGN KEY (cafe_id) REFERENCES cafes(cafe_id)
+        );
+		
+CREATE TABLE orders (
+            order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            status TEXT CHECK (status IN ('placed', 'preparing', 'ready', 'picked', 'completed')) NOT NULL,
+            order_location TEXT CHECK (order_location IN ('dine in cafeteria', 'take out')) NOT NULL,
+            total_amt DECIMAL(10,2) NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES Users(user_id)
+        );
+		
+CREATE TABLE order_items (
+            order_item_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_id INTEGER,
+            item_id INTEGER,
+            quantity INT NOT NULL,
+            sub_total DECIMAL(10, 2) NOT NULL,
+            FOREIGN KEY (order_id) REFERENCES orders(order_id),
+            FOREIGN KEY (item_id) REFERENCES menu_items(item_id)
+        );
+
+CREATE TABLE pickup_notifications (
+            notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_id INTEGER,
+            pickup_time TIMESTAMP,
+            notification_status TEXT CHECK (notification_status IN ('pending', 'sent', 'completed')) NOT NULL,
+            pickup_instruction VARCHAR(255) NOT NULL,
+            FOREIGN KEY (order_id) REFERENCES orders(order_id)
+        );
+        ''',
+        '''
+        CREATE TABLE order_tracking (
+            tracking_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_id INTEGER,
+            status TEXT CHECK (status IN ('placed', 'preparing', 'ready', 'picked', 'completed')) NOT NULL,
+            status_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (order_id) REFERENCES orders(order_id)
+        );
+		
+INSERT INTO users (username, password, email, campus)
+VALUES ('user1', 'password123', 'user1@example.com', 'campus a');
+
+INSERT INTO users (username, password, email, campus)
+VALUES ('user2', 'securepass', 'user2@example.com', 'campus b');
+
+INSERT INTO cafes (cafe_name, location)
+VALUES ('Cafe A', 'Location A');
+
+INSERT INTO cafes (cafe_name, location)
+VALUES ('Cafe B', 'Location B');
+
+INSERT INTO menu_items (item_name, description, diet_info, price, item_count, cafe_id)
+VALUES ('Item 1', 'Description 1', 'veg', 10.99, 20, 1);
+
+INSERT INTO menu_items (item_name, description, diet_info, price, item_count, cafe_id)
+VALUES ('Item 2', 'Description 2', 'non-veg', 15.99, 15, 2);
+
+INSERT INTO orders (user_id, status, order_location, total_amt)
+VALUES (1, 'placed', 'dine in cafeteria', 10.99);
+
+INSERT INTO orders (user_id, status, order_location, total_amt)
+VALUES (2, 'ready', 'take out', 15.99);
+
+INSERT INTO order_items (order_id, item_id, quantity, sub_total)
+VALUES (1, 1, 2, 21.98);
+
+INSERT INTO order_items (order_id, item_id, quantity, sub_total)
+VALUES (2, 2, 1, 15.99);
+
+INSERT INTO pickup_notifications (order_id, pickup_time, notification_status, pickup_instruction)
+VALUES (1, '2024-03-07 12:00:00', 'pending', 'Please wait for your order.');
+
+INSERT INTO pickup_notifications (order_id, pickup_time, notification_status, pickup_instruction)
+VALUES (2, '2024-03-08 13:30:00', 'sent', 'Order is ready for pickup.');
+
+INSERT INTO order_tracking (order_id, status)
+VALUES (1, 'picked');
+
+INSERT INTO order_tracking (order_id, status)
+VALUES (2, 'completed');
+</sql><current_tab id="0"/></tab_sql></sqlb_project>

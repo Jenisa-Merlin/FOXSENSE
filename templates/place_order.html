@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Order</title>
+</head>
+<body>
+    <h1>Place Order</h1>
+
+    <!-- Display selected menu items -->
+    <ul>
+        {% for item in selected_items %}
+            <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Subtotal: ${{ item.sub_total }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Display total amount -->
+    <p>Total Amount: ${{ total_amount }}</p>
+
+    <!-- Form to place the order -->
+    <form method="post" action="{{ url_for('place_order') }}">
+        <input type="hidden" name="order_id" value="{{ order_id }}">
+        <button type="submit">Place Order</button>
+    </form>
+</body>
+</html>

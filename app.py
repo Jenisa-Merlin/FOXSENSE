@@ -1,6 +1,6 @@
 from flask import Flask
 from routes import *
-#from models import *
+from models import *
 
 app = Flask(__name__)
 app.secret_key = "abcd@123"

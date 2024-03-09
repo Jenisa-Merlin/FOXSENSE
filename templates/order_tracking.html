@@ -1,0 +1,33 @@
+<!-- templates/order_tracking.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking</title>
+</head>
+<body>
+    <h1>Order Tracking</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Tracking ID</th>
+                <th>Order ID</th>
+                <th>Status</th>
+                <th>Status Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tracking in order_tracking_data %}
+                <tr>
+                    <td>{{ tracking.tracking_id }}</td>
+                    <td>{{ tracking.order_id }}</td>
+                    <td>{{ tracking.status }}</td>
+                    <td>{{ tracking.status_timestamp }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

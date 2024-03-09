@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pickup Notifications</title>
+</head>
+<body>
+    <h1>Pickup Notifications</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Notification ID</th>
+                <th>Order ID</th>
+                <th>Pickup Time</th>
+                <th>Status</th>
+                <th>Instruction</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pickup in pickup_data %}
+                <tr>
+                    <td>{{ pickup.notification_id }}</td>
+                    <td>{{ pickup.order_id }}</td>
+                    <td>{{ pickup.pickup_time }}</td>
+                    <td>{{ pickup.notification_status }}</td>
+                    <td>{{ pickup.pickup_instruction }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

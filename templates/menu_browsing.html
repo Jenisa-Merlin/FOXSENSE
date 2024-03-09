@@ -7,7 +7,6 @@
 </head>
 <body>
     <h1>Menu Items</h1>
-    
     <!-- Search form -->
     <form method="post" action="{{ url_for('menu_browsing') }}">
         <label for="cafe_id">Select Cafe:</label>
@@ -19,10 +18,8 @@
         </select>
         <button type="submit">Search</button>
     </form>
-
     <!-- Order form -->
     <form method="post" action="{{ url_for('place_order') }}">
-        <!-- Display menu items with checkboxes -->
         <ul>
             {% for item in menu_items %}
                 <li>
@@ -33,16 +30,23 @@
                 </li>
             {% endfor %}
         </ul>
-
         <!-- Order location -->
         <label for="order_location">Select Order Location:</label>
         <select name="order_location" id="order_location">
             <option value="dine in cafeteria">Dine in Cafeteria</option>
             <option value="take out">Take Out</option>
         </select>
-
         <!-- Submit button -->
         <button type="submit">Place Order</button>
     </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
 </body>
 </html>

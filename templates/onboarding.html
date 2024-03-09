@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboard</title>
+</head>
+<body>
+    <a href="{{ url_for('menu_browsing') }}"><button>Menu</button></a><br><br>
+    <form method="post" action="{{ url_for('view_pickup_notification') }}">
+        <label for="order_id">Enter Order ID:</label>
+        <input type="number" name="order_id" required>
+        <button type="submit">View Notifications</button>
+    </form>
+    <form method="post" action="{{ url_for('order_tracking_id') }}">
+        <label for="order_id">Enter Order ID:</label>
+        <input type="number" name="order_id" required>
+        <button type="submit">View Order Tracking</button>
+    </form>
+</body>
+</html>

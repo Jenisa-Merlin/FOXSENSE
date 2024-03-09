@@ -235,3 +235,42 @@ def insert_order_tracking(order_id, status):
         print(f"Error: {e}")
     finally:
         conn.close()
+
+def get_pickup_notifications():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM pickup_notifications")
+        pickup_notifications = cursor.fetchall()
+        return pickup_notifications
+    except sqlite3.Error as e:
+        print(f"Error fetching pickup notifications: {e}")
+    finally:
+        conn.close()
+
+def get_order_tracking():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM order_tracking")
+        order_tracking = cursor.fetchall()
+        return order_tracking
+    except sqlite3.Error as e:
+        print(f"Error fetching order tracking data: {e}")
+    finally:
+        conn.close()
+
+def get_order_tracking_by_order_id(order_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM order_tracking WHERE order_id = ?", (order_id,))
+        order_tracking_data = cursor.fetchall()
+        return order_tracking_data
+    except sqlite3.Error as e:
+        print(f"Error fetching order tracking data: {e}")
+    finally:
+        conn.close()

@@ -1,7 +1,8 @@
-from flask import request, flash, redirect, url_for, session, render_template
+from flask import request, flash, redirect, url_for, session, render_template, jsonify
 from models import *
 
 def setupRoutes(app):
+    #for user authentication
     def login_required(func):
         def wrapper(*args, **kwargs):
             if 'user_id' not in session:
@@ -10,9 +11,10 @@ def setupRoutes(app):
             return func(*args, **kwargs)
         return wrapper
 
+    #initial onboarding page
     @app.route('/')
     def index():
-        return "Welcome to cafeteria"
+        return render_template('index.html')
     
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
@@ -21,15 +23,12 @@ def setupRoutes(app):
             password = request.form['password']
             email = request.form['email']
             campus = request.form['campus']
-
             if get_user_by_username(username):
                 flash('Username already exists. Please choose another.', 'error')
             else:
                 insert_user(username, password, email, campus)
                 flash('Signup successful! You can now login.', 'success')
                 return redirect(url_for('login'))
-
-        #return "Signup successful"
         return render_template("signup.html") 
     
     @app.route('/login', methods=['GET', 'POST'])
@@ -37,18 +36,18 @@ def setupRoutes(app):
         if request.method == 'POST':
             username = request.form['username']
             password = request.form['password']
-
             user = get_user_by_username(username)
-
             if user and user['password'] == password:
                 session['user_id'] = user['user_id']
                 session['username'] = user['username']
-
                 flash('Login successful!', 'success')
-                return redirect(url_for('index')) 
+                return redirect(url_for('onboard')) 
             flash('Invalid username or password. Please try again.', 'error')
-
         return render_template("login.html")
+    
+    @app.route('/onboard')
+    def onboard():
+        return render_template('onboarding.html')
     
     @app.route('/menu_browsing', methods=['GET', 'POST'])
     def menu_browsing():
@@ -57,8 +56,7 @@ def setupRoutes(app):
             menu_items = get_menu_items_by_cafe(cafe_id)
         else:
             menu_items = get_all_menu_items()
-
-        cafes = get_all_cafes()  # Assuming you have a function to retrieve all cafes
+        cafes = get_all_cafes()  
         return render_template('menu_browsing.html', menu_items=menu_items, cafes=cafes)
     
     @app.route('/place_order', methods=['POST'])
@@ -68,11 +66,9 @@ def setupRoutes(app):
             if not user_id:
                 flash('User not logged in. Please login first.', 'error')
                 return redirect(url_for('login'))  # Redirect to login page if user is not logged in
-
             order_location = request.form['order_location']
             quantities = [int(quantity) for quantity in request.form.getlist('quantities[]')]
             menu_item_ids = [int(item_id) for item_id in request.form.getlist('menu_items[]')]
-
             # Validate order_location
             if order_location not in ['dine in cafeteria', 'take out']:
                 raise ValueError('Invalid order location')
@@ -96,7 +92,7 @@ def setupRoutes(app):
                 insert_order_item(order_id, item_id, quantity, subtotal)
 
             flash('Order placed successfully!', 'success')
-            return redirect(url_for('index'))  # Replace 'index' with your actual route
+            return render_template('place_order.html',total_amount=total_amount)  # Replace 'index' with your actual route
 
         except ValueError as e:
             flash(f'Error placing order: {str(e)}', 'error')
@@ -107,7 +103,7 @@ def setupRoutes(app):
         if request.method == 'POST':
             order_id = request.form['order_id']
             pickup_time = request.form['pickup_time']
-            notification_status = 'pending'  # You may adjust this based on your logic
+            notification_status = ['notification_status'] 
             pickup_instruction = request.form['pickup_instruction']
 
             # Insert pickup notification
@@ -126,3 +122,19 @@ def setupRoutes(app):
             insert_order_tracking(order_id, status)
 
             return "Order tracking entry created successfully"
+
+    @app.route('/view_pickup_notification')
+    def view_pickup_notification():
+        pickup_data = get_pickup_notifications()
+        return render_template('pickup_notifications.html', pickup_data=pickup_data)
+
+    @app.route('/view_order_tracking')
+    def view_order_tracking():
+        order_tracking_data = get_order_tracking()
+        return render_template('order_tracking.html', order_tracking_data=order_tracking_data)
+    
+    @app.route('/order_tracking_id',methods=['GET','POST'])
+    def order_tracking_id(order_id):
+        order_id = request.form['order_id']
+        order_tracking_data = get_order_tracking_by_order_id(order_id)
+        return order_tracking_data
